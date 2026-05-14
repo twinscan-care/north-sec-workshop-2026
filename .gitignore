@@ -1,0 +1,7 @@
+.venv/
+.auth_token
+files
+__pycache__
+sandbox-svc-review
+target/
+.zed
