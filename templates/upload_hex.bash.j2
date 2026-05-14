@@ -1,0 +1,2 @@
+DATA={{ data }};
+for ((i=0;i<${#DATA};i+=2)); do printf "\x${DATA:$i:2}"; done >> {{ destination }} && echo -n "ok"

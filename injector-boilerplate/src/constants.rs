@@ -1,0 +1,1 @@
+pub const EXAMPLE_CONSTANT: usize = 0x4141414141414141;
