@@ -28,12 +28,13 @@ def main():
     # Construct the raw HTTP GET request
     # We explicitly define the Host header and use \r\n line endings
     request = (
-        b"GET /api/reviews/"
-        + guid.encode()
-        + b" HTTP/1.1\r\nHost: "
-        + host.encode()
-        + b"\r\n\r\n"
+        b"GET /api/reviews/" + guid.encode() + b" HTTP/1.1\r\nHost: " + host.encode()
     )
+
+    for k, v in init_google_iap().items():
+        request = request + b"\r\n" + b"Cookie: " + k.encode() + b"=" + v.encode()
+
+    request = request + b"\r\n\r\n"
 
     log.info(f"Sending HTTP GET request to /api/review/{guid} on {host}:{port}")
     conn.send(request)
@@ -42,6 +43,18 @@ def main():
     # conn.interactive() puts the local terminal in raw mode, enabling
     # interactive shell features like sending Ctrl-C (SIGINT) to the remote.
     conn.interactive()
+
+
+def init_google_iap():
+    with open(".auth_token", "r") as f:
+        from http.cookies import SimpleCookie
+
+        token = f.read().strip()
+
+        cookie = SimpleCookie()
+        cookie.load(token)
+
+        return {k: v.value for k, v in cookie.items()}
 
 
 if __name__ == "__main__":

