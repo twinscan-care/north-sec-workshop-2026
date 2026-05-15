@@ -97,6 +97,10 @@ def main():
 def upload_file(args: argparse.Namespace):
     with open(args.file, "rb") as f:
         data = f.read()
+
+    if args.base64_location:
+        encoded_data = base64.b64encode(data).decode()
+    else:
         encoded_data = data.hex()
 
     env = Environment(
@@ -213,7 +217,7 @@ def reset_database(args: argparse.Namespace):
 
 def send_command(command: str, args: argparse.Namespace):
     res = session.post(
-        f"{args.url}/api/reviews/",
+        f"{args.url}/api/reviews",
         json={
             "product_id": args.product_id,
             "rating": 5,
@@ -255,6 +259,7 @@ def init_google_iap():
         cookie.load(token)
 
         cookies = {k: v.value for k, v in cookie.items()}
+
         session.cookies.update(cookies)
 
 
